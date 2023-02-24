@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -6,15 +5,23 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { FirebaseAuth } from "./config";
+import { doc, setDoc } from "firebase/firestore/lite";
+import { FirebaseAuth, FirebaseDB } from "./config";
 
 const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(FirebaseAuth, googleProvider);
+    const resp = await signInWithPopup(FirebaseAuth, googleProvider);
 
-    const { displayName, email, photoURL, uid } = result.user;
+    const { displayName, email, photoURL, uid } = resp.user;
+
+    await setDoc(doc(FirebaseDB, "users", uid ), {
+      uid,
+      displayName,
+      email,
+      otherGroups: []
+    })
 
     return {
       ok: true,
@@ -42,6 +49,13 @@ export const registerUserWithEmailAndPassword = async ({ email, password, displa
     await updateProfile(FirebaseAuth.currentUser, {
       displayName,
     });
+
+    await setDoc(doc(FirebaseDB, "users", uid ), {
+      uid,
+      displayName,
+      email,
+      otherGroups: []
+    })
 
     return {
       ok: true,
@@ -87,3 +101,5 @@ export const loginWithEmailAndPassword = async ({ email, password }) => {
 export const logoutFirebase = async () => {
   return await FirebaseAuth.signOut();
 } 
+
+

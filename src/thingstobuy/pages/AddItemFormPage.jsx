@@ -5,37 +5,46 @@ import { startNewItem } from "../../store/thingstobuy";
 
 const formData = {
   text: "",
+  user: "",
 };
 
 export const AddItemForm = () => {
+  const { displayName } = useSelector((state) => state.auth);
   const { activeGroup } = useSelector((state) => state.thingsToBuySlice);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const { text, onInputChange, isFormValid } = useForm(formData);
+  const { text, user, onInputChange, isFormValid } = useForm(formData);
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
+    // console.log(displayName)
 
     if (!isFormValid) return;
 
-    dispatch(startNewItem(activeGroup, text));
+    dispatch(startNewItem(activeGroup, text, user === "" && displayName));
 
-    navigate(`/groups/${activeGroup}`);
+    navigate(`/groups/${activeGroup}/items`);
   };
 
   return (
     <>
-      <form onSubmit={handleOnSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Texto</label>
-          <input type="text" className="form-control" name="text" value={text} onChange={onInputChange} />
-        </div>
-        <button className="btn btn-primary" type="submit">
-          Crear
-        </button>
-      </form>
+      <div className="p-4">
+        <form onSubmit={handleOnSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Texto</label>
+            <input type="text" className="form-control" name="text" value={text} onChange={onInputChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Usuario</label>
+            <input type="text" className="form-control" name="user" value={user} onChange={onInputChange} />
+          </div>
+          <button className="btn btn-primary" type="submit">
+            Crear
+          </button>
+        </form>
+      </div>
     </>
   );
 };

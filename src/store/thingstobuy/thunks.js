@@ -1,8 +1,19 @@
 import { async } from "@firebase/util";
 import { collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
 import { FirebaseDB } from "../../firebase/config";
-import { loadGroups, loadItems } from "../../helpers";
-import { addNewEmptyGroup, addNewEmptyItem, savingNewGroup, savingNewItem, setActiveGroup, setActiveItem, setGroups, setItems } from "./";
+import { loadGroups, loadItems, searchUser } from "../../helpers";
+import {
+  addNewEmptyGroup,
+  addNewEmptyItem,
+  deleteGroupById,
+  deleteItemById,
+  savingNewGroup,
+  savingNewItem,
+  setGroups,
+  setItems,
+  setUserFound,
+  setUsers,
+} from "./";
 
 export const startNewGroup = (title = "", note = "") => {
   return async (dispatch, getState) => {
@@ -13,15 +24,15 @@ export const startNewGroup = (title = "", note = "") => {
     const newGroup = {
       title,
       note,
+      date: new Date().getTime(),
     };
 
-    const newDoc = doc(collection(FirebaseDB, `${uid}/things-to-buy/groups`));
+    const newDoc = doc(collection(FirebaseDB, `${uid}/admin/groups`));
     await setDoc(newDoc, newGroup);
 
     newGroup.id = newDoc.id;
 
     dispatch(addNewEmptyGroup(newGroup));
-    dispatch(setActiveGroup(newGroup));
   };
 };
 
@@ -47,7 +58,21 @@ export const startLoadingItems = (gid) => {
   };
 };
 
-export const startNewItem = (gid = "", text = "") => {
+export const startSearchingUser = (email = "") => {
+  return async (dispatch) => {
+    const users = await searchUser(email);
+
+    if (users.length === 0) {
+      dispatch(setUsers(users));
+      dispatch(setUserFound(false));
+    } else {
+      dispatch(setUsers(users));
+      dispatch(setUserFound(true));
+    }
+  };
+};
+
+export const startNewItem = (gid = "", text = "", user = "") => {
   return async (dispatch, getState) => {
     dispatch(savingNewItem());
 
@@ -55,15 +80,27 @@ export const startNewItem = (gid = "", text = "") => {
 
     const newItem = {
       text,
+      user,
+      date: new Date().getTime(),
     };
 
-    const newDoc = doc(collection(FirebaseDB, `${uid}/things-to-buy/groups/${gid}/items`));
+    const newDoc = doc(collection(FirebaseDB, `${uid}/admin/groups/${gid}/items`));
     await setDoc(newDoc, newItem);
 
     newItem.id = newDoc.id;
 
     dispatch(addNewEmptyItem(newItem));
-    dispatch(setActiveItem(newItem));
+  };
+};
+
+export const startDeletingGroup = (gid) => {
+  return async (dispatch, getState) => {
+    const { uid } = getState().auth;
+
+    const docRef = doc(FirebaseDB, `${uid}/admin/groups/${gid}`);
+    await deleteDoc(docRef);
+
+    dispatch(deleteGroupById(gid));
   };
 };
 
@@ -72,18 +109,9 @@ export const startDeletingItem = (iid = " ") => {
     const { uid } = getState().auth;
     const { activeGroup } = getState().thingsToBuySlice;
 
-    const docRef = doc(FirebaseDB, `${uid}/things-to-buy/groups/${activeGroup}/items/${iid}`);
+    const docRef = doc(FirebaseDB, `${uid}/admin/groups/${activeGroup}/items/${iid}`);
     await deleteDoc(docRef);
-  };
-};
 
-export const startDeletingGroup = (id) => {
-  return async (dispatch, getState) => {
-    const { uid } = getState().auth;
-
-    console.log({ id });
-
-    const docRef = doc(FirebaseDB, `${uid}/things-to-buy/groups/${id}`);
-    await deleteDoc(docRef);
+    dispatch(deleteItemById(iid));
   };
 };

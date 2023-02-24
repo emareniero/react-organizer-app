@@ -19,24 +19,30 @@ export const AddGroupForm = () => {
 
     if (!isFormValid) return;
 
-    dispatch(startNewGroup(title, note));
+    const titleUpperCase = title.toUpperCase();
+        
+    dispatch(startNewGroup(titleUpperCase, note));
 
     navigate("/groups");
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="mb-3">
-        <label className="form-label">Título</label>
-        <input type="text" className="form-control" name="title" value={title} onChange={onInputChange} />
+    <>
+      <div className="p-4">
+        <form onSubmit={onSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Título</label>
+            <input type="text" className="form-control" name="title" value={title} onChange={onInputChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Nota</label>
+            <input className="form-control" id="note" name="note" value={note} onChange={onInputChange} />
+          </div>
+          <button type="submit" className="btn btn-primary">
+            Crear
+          </button>
+        </form>
       </div>
-      <div className="mb-3">
-        <label className="form-label">Nota</label>
-        <input className="form-control" id="note" name="note" value={note} onChange={onInputChange} />
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Crear
-      </button>
-    </form>
+    </>
   );
 };
