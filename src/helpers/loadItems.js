@@ -15,6 +15,6 @@ export const loadItems = async (uid = "", gid = "") => {
     });
   });
 
-  console.log(items);
+  // console.log(items);
   return items;
 };

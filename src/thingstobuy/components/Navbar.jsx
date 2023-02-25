@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { startLogout } from "../../store/auth/thunks";
-import { navigateToMenu, setActiveGroup, setUserFound, setUsers } from "../../store/thingstobuy";
+import { navigateToMenu, setUserFound, setUsers } from "../../store/thingstobuy";
 
 export const Navbar = () => {
   const { displayName } = useSelector((status) => status.auth);
@@ -12,15 +12,13 @@ export const Navbar = () => {
 
   const handleOnLogout = () => {
     dispatch(startLogout());
-    dispatch(setUsers([]))
+    dispatch(setUsers([]));
   };
 
   const onBrandClick = () => {
-
-    dispatch(navigateToMenu())
-    dispatch(setUserFound(true))
-    dispatch(setUsers([]))
-  }
+    dispatch(navigateToMenu());
+    dispatch(setUserFound(true));
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">

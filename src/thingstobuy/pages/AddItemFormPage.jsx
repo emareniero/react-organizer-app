@@ -19,13 +19,14 @@ export const AddItemForm = () => {
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
-    // console.log(displayName)
+
+    const { id } = activeGroup[0]
 
     if (!isFormValid) return;
 
-    dispatch(startNewItem(activeGroup, text, user === "" && displayName));
+    dispatch(startNewItem(id, text, user === "" && displayName));
 
-    navigate(`/groups/${activeGroup}/items`);
+    navigate(`/groups/${id}/items`);
   };
 
   return (

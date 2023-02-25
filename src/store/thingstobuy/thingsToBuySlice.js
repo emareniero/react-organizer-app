@@ -5,13 +5,15 @@ export const thingsToBuySlice = createSlice({
   initialState: {
     isSaving: false,
     isDeleting: false,
+    isChecked: false,
     messageSaved: "",
     groups: [],
     items: [],
     user: [],
+    updatingItem: null,
     userFound: true,
     activeGroup: null,
-    activeItem: null,
+    activeItemId: null,
   },
   reducers: {
     savingNewGroup: (state) => {
@@ -28,8 +30,14 @@ export const thingsToBuySlice = createSlice({
       state.items.push(action.payload);
       state.isSaving = false;
     },
+    setUpdatingItem: (state, action) => {
+      state.activeGroup = state.groups.filter((group) => group.id === action.payload);
+    },
+    updateItem: (state, action) => {
+      state.items.push(action.payload);
+    },
     setActiveGroup: (state, action) => {
-      state.activeGroup = action.payload;
+      state.activeGroup = state.groups.filter((group) => group.id === action.payload);
     },
     setGroups: (state, action) => {
       state.groups = action.payload;
@@ -41,14 +49,15 @@ export const thingsToBuySlice = createSlice({
       state.user = action.payload;
     },
     setActiveItem: (state, action) => {
-      state.activeItem = action.payload;
+      state.activeItemId = action.payload;
+      // state.activeItem = state.items.filter((item) => item.id === action.payload)
+    },
+    setUpdatingItem: (state, action) => {
+      state.updatingItem = state.items.filter((item) => item.id === action.payload);
     },
     setUserFound: (state, action) => {
       state.userFound = action.payload;
     },
-    setNewItemToBuy: (state, action) => {},
-    setSavingItemToBuy: (state) => {},
-    updateItemToBuy: (state, action) => {},
     deleteItemById: (state, action) => {
       state.isDeleting = false;
       state.items = state.items.filter((item) => item.id !== action.payload);
@@ -58,19 +67,34 @@ export const thingsToBuySlice = createSlice({
     },
     deletingItem: (state, action) => {
       state.isDeleting = true;
+      state.activeItemId = action.payload;
     },
-    cancelDeleting: (state) => {
-      state.activeItem = null;
-      state.activeGroup = null;
+    cancelDeleting: (state, action) => {
+      state.isDeleting = false;
+      state.activeItemId = null;
+    },
+    setItemChecked: (state, action) => {
+      state.isChecked = true;
+      state.activeItemId = action.payload;
+    },
+    setItemUnchecked: (state, action) => {
+      state.isChecked = false;
+      state.activeItemId = null;
     },
     navigateToMenu: (state) => {
       state.activeGroup = null;
+      state.activeItemId = null;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
+  setUpdatingItem,
+  setItemUnchecked,
+  setItemChecked,
+  updatingItem,
+  setItemDoneState,
   setUserFound,
   setUsers,
   navigateToMenu,
