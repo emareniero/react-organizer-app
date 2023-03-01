@@ -1,4 +1,6 @@
+import { async } from "@firebase/util";
 import { collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
+import { cloneElement } from "react";
 import { FirebaseDB } from "../../firebase/config";
 import { loadGroups, loadItems, searchUser, setItemDone, setItemUndone } from "../../helpers";
 import {
@@ -29,7 +31,7 @@ export const startNewGroup = (title = "", note = "") => {
       date: new Date().getTime(),
     };
 
-    const newDoc = doc(collection(FirebaseDB, `${uid}/admin/groups`));
+    const newDoc = doc(collection(FirebaseDB, `admins/${uid}/groups`));
     await setDoc(newDoc, newGroup);
 
     newGroup.id = newDoc.id;
@@ -48,6 +50,18 @@ export const startLoadingGroups = () => {
     dispatch(setGroups(groups));
   };
 };
+
+// export const startLoadingOtherGroups = () => {
+//   return async (dispatch, getState) => {
+//     const { uid } = getState().auth;
+//     // console.log(algo)
+//     if (!uid) throw new Error("El uid no existe.");
+
+//     const groups = await loadOtherGroups(uid);
+
+//     // dispatch(setGroups(groups));
+//   }
+// }
 
 export const startLoadingItems = (gid) => {
   return async (dispatch, getState) => {
@@ -74,6 +88,29 @@ export const startSearchingUser = (email = "") => {
   };
 };
 
+export const startInvitingUser = ( aid = "", activeGroupId = "", email = "", uid = "") => {
+  return async (dispatch) => {
+
+    const newInvitation = {
+      adminId: aid,
+      activeGroupId,
+      state: true
+    }
+
+    const newInvitationDoc =  doc(collection(FirebaseDB, `users/${uid}/groupsInvolved`))
+    await setDoc(newInvitationDoc, newInvitation)
+
+    
+
+    // console.log({
+    //   aid,
+    //   activeGroupId,
+    //   email,
+    //   uid,
+    // });
+  };
+};
+
 export const startNewItem = (gid = "", text = "", user = "") => {
   return async (dispatch, getState) => {
     dispatch(savingNewItem());
@@ -87,7 +124,7 @@ export const startNewItem = (gid = "", text = "", user = "") => {
       done: false,
     };
 
-    const newDoc = doc(collection(FirebaseDB, `${uid}/admin/groups/${gid}/items`));
+    const newDoc = doc(collection(FirebaseDB, `admins/${uid}/groups/${gid}/items`));
     await setDoc(newDoc, newItem);
 
     newItem.id = newDoc.id;
@@ -100,7 +137,7 @@ export const startDeletingGroup = (gid) => {
   return async (dispatch, getState) => {
     const { uid } = getState().auth;
 
-    const docRef = doc(FirebaseDB, `${uid}/admin/groups/${gid}`);
+    const docRef = doc(FirebaseDB, `admins/${uid}/groups/${gid}`);
     await deleteDoc(docRef);
 
     dispatch(deleteGroupById(gid));
@@ -110,10 +147,9 @@ export const startDeletingGroup = (gid) => {
 export const startDeletingItem = (iid = " ") => {
   return async (dispatch, getState) => {
     const { uid } = getState().auth;
-    const { activeGroup } = getState().thingsToBuySlice;
-    const { id } = activeGroup[0];
+    const { activeGroupId } = getState().thingsToBuySlice;
 
-    const docRef = doc(FirebaseDB, `${uid}/admin/groups/${id}/items/${iid}`);
+    const docRef = doc(FirebaseDB, `admins/${uid}/groups/${activeGroupId}/items/${iid}`);
     await deleteDoc(docRef);
 
     dispatch(deleteItemById(iid));
@@ -122,30 +158,27 @@ export const startDeletingItem = (iid = " ") => {
 
 export const startSettingItemDone = (iid = "") => {
   return async (dispatch, getState) => {
-    dispatch(setUpdatingItem(iid))
-    
+    dispatch(setUpdatingItem(iid));
+
     const { uid } = getState().auth;
-    const { activeGroup } = getState().thingsToBuySlice;
-    const { id: gid } = activeGroup[0];
+    const { activeGroupId } = getState().thingsToBuySlice;
 
     // const itemToFirestore = { ...updatingItem }
     // delete itemToFirestore.id;
-    await setItemDone(uid, gid, iid);
-    const items = await loadItems(uid, gid)
-    dispatch(setItems(items))
-    
+    await setItemDone(uid, activeGroupId, iid);
+    const items = await loadItems(uid, activeGroupId);
+    dispatch(setItems(items));
   };
 };
 
 export const startSettingItemUndone = (iid = "") => {
   return async (dispatch, getState) => {
-    dispatch(setUpdatingItem(iid))
+    dispatch(setUpdatingItem(iid));
     const { uid } = getState().auth;
-    const { activeGroup } = getState().thingsToBuySlice;
-    const { id: gid } = activeGroup[0];
+    const { activeGroupId } = getState().thingsToBuySlice;
 
-    await setItemUndone(uid, gid, iid);
-    const items = await loadItems(uid, gid)
-    dispatch(setItems(items))
+    await setItemUndone(uid, activeGroupId, iid);
+    const items = await loadItems(uid, activeGroupId);
+    dispatch(setItems(items));
   };
 };

@@ -20,7 +20,6 @@ export const signInWithGoogle = async () => {
       uid,
       displayName,
       email,
-      otherGroups: []
     })
 
     return {
@@ -54,7 +53,6 @@ export const registerUserWithEmailAndPassword = async ({ email, password, displa
       uid,
       displayName,
       email,
-      otherGroups: []
     })
 
     return {

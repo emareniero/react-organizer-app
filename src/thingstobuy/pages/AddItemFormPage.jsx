@@ -10,7 +10,7 @@ const formData = {
 
 export const AddItemForm = () => {
   const { displayName } = useSelector((state) => state.auth);
-  const { activeGroup } = useSelector((state) => state.thingsToBuySlice);
+  const { activeGroupId } = useSelector((state) => state.thingsToBuySlice);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -20,13 +20,11 @@ export const AddItemForm = () => {
   const handleOnSubmit = (event) => {
     event.preventDefault();
 
-    const { id } = activeGroup[0]
-
     if (!isFormValid) return;
 
-    dispatch(startNewItem(id, text, user === "" && displayName));
+    dispatch(startNewItem(activeGroupId, text, user === "" && displayName));
 
-    navigate(`/groups/${id}/items`);
+    navigate(`/groups/${activeGroupId}/items`);
   };
 
   return (

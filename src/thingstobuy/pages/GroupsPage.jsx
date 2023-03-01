@@ -7,7 +7,7 @@ import { GroupDeleting } from "../components/GroupDeleting";
 export const GroupsPage = () => {
   const navigate = useNavigate();
 
-  const { groups, activeGroup } = useSelector((state) => state.thingsToBuySlice);
+  const { groups, activeGroupId } = useSelector((state) => state.thingsToBuySlice);
 
   const onAddClick = () => {
     navigate("/groups/add-new-group");
@@ -16,11 +16,11 @@ export const GroupsPage = () => {
   return (
     <>
       {groups.length === 0 && <EmptyPage />}
-      <ul className="group-list me-4">
+      <ol className="group-list me-4">
         {groups.map((group) =>
-          activeGroup !== group.id ? <GroupCard key={group.id} {...group} /> : <GroupDeleting key={group.id} {...group} />
+          activeGroupId !== group.id ? <GroupCard key={group.id} {...group} /> : <GroupDeleting key={group.id} {...group} />
         )}
-      </ul>
+      </ol>
 
       <div className="dropup position-fixed bottom-0 end-0 rounded-circle m-5">
         <button className="btn btn-primary btn-lg" onClick={onAddClick}>

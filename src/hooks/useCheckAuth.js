@@ -3,7 +3,10 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FirebaseAuth } from "../firebase/config";
 import { login, logout } from "../store/auth";
-import { startLoadingGroups } from "../store/thingstobuy";
+import { 
+  startLoadingGroups, 
+  // startLoadingOtherGroups, 
+} from "../store/thingstobuy";
 
 export const useCheckAuth = () => {
   const { status } = useSelector((state) => state.auth);
@@ -20,6 +23,7 @@ export const useCheckAuth = () => {
 
       dispatch(login({ uid, displayName, photoURL, email }));
       dispatch( startLoadingGroups() )
+      // dispatch( startLoadingOtherGroups() )
     });
   }, []);
   return {status};

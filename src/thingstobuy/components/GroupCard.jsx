@@ -19,6 +19,7 @@ export const GroupCard = ({ id, title, note, email, displayName }) => {
   };
 
   const onAddUserClick = () => {
+    dispatch(setActiveGroup(id))
     navigate(`/groups/${id}/users/add-new-user`);
   };
 

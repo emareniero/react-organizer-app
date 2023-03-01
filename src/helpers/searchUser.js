@@ -13,5 +13,6 @@ export const searchUser = async (email) => {
     });
   });
 
+  // console.log(users)
   return users;   
 };

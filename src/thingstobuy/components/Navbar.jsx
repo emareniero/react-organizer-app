@@ -18,6 +18,7 @@ export const Navbar = () => {
   const onBrandClick = () => {
     dispatch(navigateToMenu());
     dispatch(setUserFound(true));
+    dispatch(setUsers([]))
   };
 
   return (

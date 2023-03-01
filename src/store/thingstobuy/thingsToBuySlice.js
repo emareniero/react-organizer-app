@@ -12,7 +12,7 @@ export const thingsToBuySlice = createSlice({
     user: [],
     updatingItem: null,
     userFound: true,
-    activeGroup: null,
+    activeGroupId: null,
     activeItemId: null,
   },
   reducers: {
@@ -31,16 +31,17 @@ export const thingsToBuySlice = createSlice({
       state.isSaving = false;
     },
     setUpdatingItem: (state, action) => {
-      state.activeGroup = state.groups.filter((group) => group.id === action.payload);
+      state.activeGroupId = state.groups.filter((group) => group.id === action.payload);
     },
     updateItem: (state, action) => {
       state.items.push(action.payload);
     },
     setActiveGroup: (state, action) => {
-      state.activeGroup = state.groups.filter((group) => group.id === action.payload);
+      state.activeGroupId = action.payload
     },
     setGroups: (state, action) => {
       state.groups = action.payload;
+      // state.groups.push(action.payload)
     },
     setItems: (state, action) => {
       state.items = action.payload;
@@ -64,6 +65,7 @@ export const thingsToBuySlice = createSlice({
     },
     deleteGroupById: (state, action) => {
       state.groups = state.groups.filter((group) => group.id !== action.payload);
+      state.activeGroupId = null
     },
     deletingItem: (state, action) => {
       state.isDeleting = true;
@@ -72,6 +74,7 @@ export const thingsToBuySlice = createSlice({
     cancelDeleting: (state, action) => {
       state.isDeleting = false;
       state.activeItemId = null;
+      state.activeGroupId = null;
     },
     setItemChecked: (state, action) => {
       state.isChecked = true;
@@ -82,7 +85,7 @@ export const thingsToBuySlice = createSlice({
       state.activeItemId = null;
     },
     navigateToMenu: (state) => {
-      state.activeGroup = null;
+      state.activeGroupId = null;
       state.activeItemId = null;
     },
   },
