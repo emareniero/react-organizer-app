@@ -1,14 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { startLogout } from "../../store/auth/thunks";
 import { navigateToMenu, setUserFound, setUsers } from "../../store/thingstobuy";
 
 export const Navbar = () => {
   const { displayName } = useSelector((status) => status.auth);
+  const { invitations } = useSelector((state) => state.thingsToBuySlice);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleOnLogout = () => {
     dispatch(startLogout());
@@ -18,8 +20,13 @@ export const Navbar = () => {
   const onBrandClick = () => {
     dispatch(navigateToMenu());
     dispatch(setUserFound(true));
-    dispatch(setUsers([]))
+    dispatch(setUsers([]));
   };
+
+  const onInvitationsClick = () => {
+    console.log("Ver invitaciones")
+    navigate("/groups/invitations-list")
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -29,13 +36,25 @@ export const Navbar = () => {
           &nbsp; {displayName}
         </Link>
 
-        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button className="btn btn-outline-light" onClick={handleOnLogout}>
-            <span>
-              <i className="fas fa-sign-out-alt"></i>
-              &nbsp; Salir
-            </span>
-          </button>
+        <div className="row">
+          <div className="col">
+            <button type="button" className="btn btn-primary position-relative" onClick={onInvitationsClick} >
+              Invitaciones
+              {invitations.length > 0 ? (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {invitations.length}
+                  <span className="visually-hidden">unread messages</span>
+                </span>
+              ) : (
+                ""
+              )}
+            </button>
+          </div>
+          <div className="col">
+            <button className="btn btn-outline-light" onClick={handleOnLogout}>
+              Salir
+            </button>
+          </div>
         </div>
       </div>
     </nav>

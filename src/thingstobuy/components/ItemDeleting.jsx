@@ -6,7 +6,7 @@ export const ItemDeleting = ({ id }) => {
   const dispatch = useDispatch();
 
   const onNoDeletingClick = () => {
-    dispatch(cancelDeleting(id));
+    dispatch(cancelDeleting());
   };
 
   const onYesDeletingClick = () => {

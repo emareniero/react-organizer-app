@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setActiveGroup, startLoadingItems } from "../../store/thingstobuy";
+import { deletingGroup, setActiveGroup, startLoadingItems } from "../../store/thingstobuy";
 
 export const GroupCard = ({ id, title, note, email, displayName }) => {
   const dispatch = useDispatch();
@@ -24,7 +24,8 @@ export const GroupCard = ({ id, title, note, email, displayName }) => {
   };
 
   const onDeleteClick = () => {
-    dispatch(setActiveGroup(id));
+    // dispatch(setActiveGroup(id));
+    dispatch(deletingGroup(id))
   };
 
   return (

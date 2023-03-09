@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../../hooks";
 import { startNewGroup } from "../../store/thingstobuy";
@@ -9,6 +9,7 @@ const formData = {
 };
 
 export const AddGroupForm = () => {
+  const { email } = useSelector( state => state.auth)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ export const AddGroupForm = () => {
 
     const titleUpperCase = title.toUpperCase();
         
-    dispatch(startNewGroup(titleUpperCase, note));
+    dispatch(startNewGroup(titleUpperCase, note, email));
 
     navigate("/groups");
   };

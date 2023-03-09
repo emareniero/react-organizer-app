@@ -7,7 +7,7 @@ import { GroupDeleting } from "../components/GroupDeleting";
 export const GroupsPage = () => {
   const navigate = useNavigate();
 
-  const { groups, activeGroupId } = useSelector((state) => state.thingsToBuySlice);
+  const { groups, activeGroupId, isDeleting } = useSelector((state) => state.thingsToBuySlice);
 
   const onAddClick = () => {
     navigate("/groups/add-new-group");
@@ -17,8 +17,7 @@ export const GroupsPage = () => {
     <>
       {groups.length === 0 && <EmptyPage />}
       <ol className="group-list me-4">
-        {groups.map((group) =>
-          activeGroupId !== group.id ? <GroupCard key={group.id} {...group} /> : <GroupDeleting key={group.id} {...group} />
+        {groups.map((group) => (activeGroupId === group.id && isDeleting === true ? <GroupDeleting key={group.id} {...group} /> : <GroupCard key={group.id} {...group} />)
         )}
       </ol>
 

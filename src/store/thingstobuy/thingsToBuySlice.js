@@ -6,8 +6,10 @@ export const thingsToBuySlice = createSlice({
     isSaving: false,
     isDeleting: false,
     isChecked: false,
+    isInviting: false,
     messageSaved: "",
     groups: [],
+    invitations: [],
     items: [],
     user: [],
     updatingItem: null,
@@ -18,6 +20,12 @@ export const thingsToBuySlice = createSlice({
   reducers: {
     savingNewGroup: (state) => {
       state.isSaving = true;
+    },
+    userInvitation: (state, action) => {
+      state.isInviting = true
+    },
+    userInvitationCancel: ( state ) => {
+      state.isInviting = false
     },
     savingNewItem: (state) => {
       state.isSaving = true;
@@ -42,6 +50,9 @@ export const thingsToBuySlice = createSlice({
     setGroups: (state, action) => {
       state.groups = action.payload;
       // state.groups.push(action.payload)
+    },
+    setInvitations: (state, action) => {
+      state.invitations = action.payload
     },
     setItems: (state, action) => {
       state.items = action.payload;
@@ -71,6 +82,10 @@ export const thingsToBuySlice = createSlice({
       state.isDeleting = true;
       state.activeItemId = action.payload;
     },
+    deletingGroup: (state, action) => {
+      state.isDeleting = true;
+      state.activeGroupId = action.payload;
+    },
     cancelDeleting: (state, action) => {
       state.isDeleting = false;
       state.activeItemId = null;
@@ -93,6 +108,10 @@ export const thingsToBuySlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setInvitations,
+  userInvitationCancel,
+  userInvitation,
+  deletingGroup,
   setUpdatingItem,
   setItemUnchecked,
   setItemChecked,

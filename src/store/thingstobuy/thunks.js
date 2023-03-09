@@ -3,6 +3,7 @@ import { collection, deleteDoc, doc, setDoc } from "firebase/firestore/lite";
 import { cloneElement } from "react";
 import { FirebaseDB } from "../../firebase/config";
 import { loadGroups, loadItems, searchUser, setItemDone, setItemUndone } from "../../helpers";
+import { acceptInvitation } from "../../helpers/acceptInvitation";
 import {
   addNewEmptyGroup,
   addNewEmptyItem,
@@ -11,6 +12,7 @@ import {
   savingNewGroup,
   savingNewItem,
   setGroups,
+  setInvitations,
   setItemChecked,
   setItems,
   setItemUnchecked,
@@ -19,7 +21,7 @@ import {
   setUsers,
 } from "./";
 
-export const startNewGroup = (title = "", note = "") => {
+export const startNewGroup = (title = "", note = "", email = "") => {
   return async (dispatch, getState) => {
     dispatch(savingNewGroup());
 
@@ -28,12 +30,12 @@ export const startNewGroup = (title = "", note = "") => {
     const newGroup = {
       title,
       note,
+      adminEmail: email,
       date: new Date().getTime(),
     };
 
     const newDoc = doc(collection(FirebaseDB, `admins/${uid}/groups`));
     await setDoc(newDoc, newGroup);
-
     newGroup.id = newDoc.id;
 
     dispatch(addNewEmptyGroup(newGroup));
@@ -45,23 +47,12 @@ export const startLoadingGroups = () => {
     const { uid } = getState().auth;
     if (!uid) throw new Error("El uid no existe.");
 
-    const groups = await loadGroups(uid);
+    const { groups, invitationsToGroups } = await loadGroups(uid);
 
     dispatch(setGroups(groups));
+    dispatch(setInvitations(invitationsToGroups));
   };
 };
-
-// export const startLoadingOtherGroups = () => {
-//   return async (dispatch, getState) => {
-//     const { uid } = getState().auth;
-//     // console.log(algo)
-//     if (!uid) throw new Error("El uid no existe.");
-
-//     const groups = await loadOtherGroups(uid);
-
-//     // dispatch(setGroups(groups));
-//   }
-// }
 
 export const startLoadingItems = (gid) => {
   return async (dispatch, getState) => {
@@ -88,26 +79,18 @@ export const startSearchingUser = (email = "") => {
   };
 };
 
-export const startInvitingUser = ( aid = "", activeGroupId = "", email = "", uid = "") => {
+export const startInvitingUser = (aid, aemail, activeGroupId, uid) => {
   return async (dispatch) => {
-
     const newInvitation = {
       adminId: aid,
+      adminEmail: aemail,
       activeGroupId,
-      state: true
-    }
+      invitationAcepted: false,
+    };
 
-    const newInvitationDoc =  doc(collection(FirebaseDB, `users/${uid}/groupsInvolved`))
-    await setDoc(newInvitationDoc, newInvitation)
+    await setDoc(doc(FirebaseDB, `users/${uid}/groupsInvolved`, activeGroupId), newInvitation);
 
-    
-
-    // console.log({
-    //   aid,
-    //   activeGroupId,
-    //   email,
-    //   uid,
-    // });
+    //TODO: avisar que la invitación fue realizada con éxito
   };
 };
 
@@ -180,5 +163,31 @@ export const startSettingItemUndone = (iid = "") => {
     await setItemUndone(uid, activeGroupId, iid);
     const items = await loadItems(uid, activeGroupId);
     dispatch(setItems(items));
+  };
+};
+
+export const startAceptingInvitation = (gid = "") => {
+  return async (dispatch, getState) => {
+    const { uid } = getState().auth;
+
+    await acceptInvitation(uid, gid);
+
+    const { groups, invitationsToGroups } = await loadGroups(uid);
+
+    dispatch(setGroups(groups));
+    dispatch(setInvitations(invitationsToGroups));
+  };
+};
+
+export const startDenyingInvitation = (gid = "") => {
+  return async (dispatch, getState) => {
+    const { uid } = getState().auth;
+
+    const docRef = doc(FirebaseDB, `users/${uid}/groupsInvolved/${gid}`);
+    await deleteDoc(docRef);
+    const { groups, invitationsToGroups } = await loadGroups(uid);
+
+    dispatch(setGroups(groups));
+    dispatch(setInvitations(invitationsToGroups));
   };
 };

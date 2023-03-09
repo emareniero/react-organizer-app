@@ -1,4 +1,5 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore/lite";
+import { useState } from "react";
 import { FirebaseDB } from "../firebase/config";
 
 export const loadGroups = async (uid = "") => {
@@ -15,8 +16,6 @@ export const loadGroups = async (uid = "") => {
     });
   });
 
-  // console.log({ groups });
-
   const findGroupsInvolved = collection(FirebaseDB, `users/${uid}/groupsInvolved`);
   const docFindGroupsInvolved = await getDocs(findGroupsInvolved);
 
@@ -27,41 +26,27 @@ export const loadGroups = async (uid = "") => {
     });
   });
 
+  const invitationsToGroups = [];
 
-  
-  for ( const { activeGroupId, adminId } of arrayOfGroupsInvolved ) {
+  for (const { activeGroupId, adminId, invitationAcepted } of arrayOfGroupsInvolved) {
+    const docRef = doc(FirebaseDB, `admins/${adminId}/groups/${activeGroupId}`);
+    const docSnap = await getDoc(docRef);
 
-    const docRef = doc(FirebaseDB, `admins/${adminId}/groups/${activeGroupId}`)
-    const docSnap = await getDoc(docRef)
-    groups.push(docSnap.data())
-
+    if (!invitationAcepted === false) {
+      groups.push({
+        id: activeGroupId,
+        ...docSnap.data(),
+      });
+    } else {
+      invitationsToGroups.push({
+        id: activeGroupId,
+        ...docSnap.data(),
+      });
+    }
   }
 
-  console.log(groups)
-  return groups;
+  return {
+    groups,
+    invitationsToGroups,
+  };
 };
-
-// export const loadOtherGroups = async (uid = " ") => {
-
-//   const findGroupsInvolved = collection(FirebaseDB, `users/${uid}/groupsInvolved`);
-//   const docFindGroupsInvolved = await getDocs(findGroupsInvolved);
-
-//   const arrayOfGroupsInvolved = [];
-//   docFindGroupsInvolved.forEach((doc) => {
-//     arrayOfGroupsInvolved.push({
-//       ...doc.data(),
-//     });
-//   });
-
-
-  
-//   for ( const { activeGroupId, adminId } of arrayOfGroupsInvolved ) {
-
-//     const docRef = doc(FirebaseDB, `admins/${adminId}/groups/${activeGroupId}`)
-//     const docSnap = await getDoc(docRef)
-//     groups.push(docSnap.data())
-
-//   }
-
-//   return groups;
-// };
