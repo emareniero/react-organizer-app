@@ -1,15 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { deletingGroup, setActiveGroup, startLoadingItems } from "../../store/thingstobuy";
+import { deletingGroup, setActiveAdminGroupId, setActiveGroup, startLoadingItems } from "../../store/thingstobuy";
 
-export const GroupCard = ({ id, title, note, email, displayName }) => {
+export const GroupCard = ({ id, title, note, email, displayName, adminId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onGroupClick = () => {
     dispatch(startLoadingItems(id));
     dispatch(setActiveGroup(id));
+    dispatch(setActiveAdminGroupId(adminId))
     navigate(`/groups/${id}/items`);
   };
 

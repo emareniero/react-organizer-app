@@ -31,6 +31,7 @@ export const startNewGroup = (title = "", note = "", email = "") => {
       title,
       note,
       adminEmail: email,
+      adminId: uid,
       date: new Date().getTime(),
     };
 
@@ -143,13 +144,10 @@ export const startSettingItemDone = (iid = "") => {
   return async (dispatch, getState) => {
     dispatch(setUpdatingItem(iid));
 
-    const { uid } = getState().auth;
-    const { activeGroupId } = getState().thingsToBuySlice;
+    const { activeGroupId, groupAdminId } = getState().thingsToBuySlice;
 
-    // const itemToFirestore = { ...updatingItem }
-    // delete itemToFirestore.id;
-    await setItemDone(uid, activeGroupId, iid);
-    const items = await loadItems(uid, activeGroupId);
+    await setItemDone(groupAdminId, activeGroupId, iid);
+    const items = await loadItems(groupAdminId, activeGroupId);
     dispatch(setItems(items));
   };
 };
@@ -157,11 +155,10 @@ export const startSettingItemDone = (iid = "") => {
 export const startSettingItemUndone = (iid = "") => {
   return async (dispatch, getState) => {
     dispatch(setUpdatingItem(iid));
-    const { uid } = getState().auth;
-    const { activeGroupId } = getState().thingsToBuySlice;
+    const { activeGroupId, groupAdminId } = getState().thingsToBuySlice;
 
-    await setItemUndone(uid, activeGroupId, iid);
-    const items = await loadItems(uid, activeGroupId);
+    await setItemUndone(groupAdminId, activeGroupId, iid);
+    const items = await loadItems(groupAdminId, activeGroupId);
     dispatch(setItems(items));
   };
 };

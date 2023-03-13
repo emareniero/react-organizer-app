@@ -15,6 +15,7 @@ export const thingsToBuySlice = createSlice({
     updatingItem: null,
     userFound: true,
     activeGroupId: null,
+    groupAdminId: null,
     activeItemId: null,
   },
   reducers: {
@@ -46,6 +47,9 @@ export const thingsToBuySlice = createSlice({
     },
     setActiveGroup: (state, action) => {
       state.activeGroupId = action.payload
+    },
+    setActiveAdminGroupId: (state, action) => {
+      state.groupAdminId = action.payload
     },
     setGroups: (state, action) => {
       state.groups = action.payload;
@@ -108,6 +112,7 @@ export const thingsToBuySlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setActiveAdminGroupId,
   setInvitations,
   userInvitationCancel,
   userInvitation,
